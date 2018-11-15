@@ -1,34 +1,4 @@
 /**
- * Returns vertices of equilateral triangle that fits in a given area
- * @param {number} width Width of canvas
- * @param {number} height Height of canvas
- * @param {number} [padding] Padding from canvas edge
- * @returns {Array<Array<number>>} List of dot coordinates
- */
-const createTriangle = (width, height, padding) => {
-  if (padding) {
-    const triangle = createTriangle(width - padding * 2, height - padding * 2);
-
-    return triangle.map(vertex => vertex.map(axis => axis + padding));
-  }
-
-  //     B
-  //    /|\
-  // a / |h\ a
-  //  /__|__\
-  // A       C
-
-  const h = height;
-  const a = h / (Math.sqrt(3) / 2);
-
-  const A = [width / 2 - a / 2, height];
-  const B = [width / 2, 0];
-  const C = [width / 2 + a / 2, height];
-
-  return [A, B, C];
-};
-
-/**
  * Returns coordinate of barycenter of a shape
  * @param {Array<Array<number>>} shape List of vertices of a shape to find
  * the barycenter
@@ -72,7 +42,8 @@ const createCircleDrawer = context => {
  * @param {number} [attractRadius=1/2] Distance from each generated dot to its
  * attractor (from 0 to 1)
  * @param {number} [delay=0] Delay between dots drawings in milliseconds
- * @param {Function} [callback] Callback of every dot drawing
+ * @param {(dot: number) => void} [callback] Callback of every dot drawing
+ * @returns Stop function
  */
 const startChaosGame = (canvas, attractors, attractRadius = 1 / 2, delay = 0, callback) => {
   const width = canvas.width;
@@ -99,13 +70,22 @@ const startChaosGame = (canvas, attractors, attractRadius = 1 / 2, delay = 0, ca
   // Initial dot
   let currentDot = getBarycenter(attractors);
   drawPoint(currentDot, '#f00', 2);
+
+  // Dot counter
   let dotCount = 0;
 
-  setInterval(() => {
+  const interval = setInterval(() => {
     currentDot = createNextDotCoordinate(currentDot);
     drawPoint(currentDot);
 
     dotCount += 1;
-    console.log(dotCount);
+
+    if (dotCount) {
+      callback(dotCount);
+    }
   }, delay);
+
+  return function stop() {
+    clearInterval(interval);
+  };
 };
