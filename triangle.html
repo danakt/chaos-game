@@ -1,0 +1,20 @@
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+<link rel="stylesheet" href="./style.css" />
+<script src="./index.js"></script>
+
+<title>Chaos game — Sierpinski triangle</title>
+
+<canvas id="canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('canvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const attractors = createTriangle(canvas.width, canvas.height, canvas.height * (1 / 8));
+  startChaosGame(canvas, attractors, 1 / 2);
+</script>
