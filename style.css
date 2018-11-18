@@ -32,3 +32,9 @@ a {
   color: #fff;
   text-decoration: none;
 }
+
+.github {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
