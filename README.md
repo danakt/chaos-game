@@ -2,7 +2,7 @@
 
 Drawing fractals, using a polygon and an initial point selected at random inside it.
 
-An example of work you can see here: https://danakt.github.io/chaos-game/index  
+An example of work you can see here: https://danakt.github.io/chaos-game/  
 The demo presents the following shapes:
 
 - Sierpinski triangle
