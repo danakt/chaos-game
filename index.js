@@ -36,35 +36,42 @@ const createCircleDrawer = context => {
 };
 
 /**
+ * Function to stop the running drawing
+ * @type {null|Function}
+ */
+let stopDrawing = null;
+
+/**
  * Starts drawing random dots
  * @param {HTMLCanvasElement} canvas Canvas to draw
  * @param {Array<Array<number>>} attractors List of dots for attract
- * @param {number} [attractRadius=1/2] Distance from each generated dot to its
- * attractor (from 0 to 1)
+ * @param {(a, v) => v} formula The formula to calculate next point
  * @param {number} [delay=0] Delay between dots drawings in milliseconds
  * @param {(dot: number) => void} [callback] Callback of every dot drawing
  * @returns Stop function
  */
-const startChaosGame = (canvas, attractors, attractRadius = 1 / 2, delay = 0, callback) => {
-  const width = canvas.width;
-  const height = canvas.height;
+const startChaosGame = (canvas, attractors, formula, delay = 0, callback) => {
   const context = canvas.getContext('2d');
-
   const drawPoint = createCircleDrawer(context);
+
+  // Stopping previous drawing
+  if (stopDrawing) {
+    stopDrawing();
+  }
+
+  // Clear canvas
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
   // Drawing attractors
   for (const vertex of attractors) {
-    drawPoint(vertex);
+    drawPoint(vertex, '#48f', 2);
   }
 
   /** Creates random dot based on previous */
   const createNextDotCoordinate = prevDot => {
     const attractor = attractors[(Math.random() * attractors.length) | 0];
 
-    return [
-      attractor[0] + (prevDot[0] - attractor[0]) * attractRadius,
-      attractor[1] + (prevDot[1] - attractor[1]) * attractRadius
-    ];
+    return [formula(attractor[0], prevDot[0]), formula(attractor[1], prevDot[1])];
   };
 
   // Initial dot
@@ -76,7 +83,7 @@ const startChaosGame = (canvas, attractors, attractRadius = 1 / 2, delay = 0, ca
 
   const interval = setInterval(() => {
     currentDot = createNextDotCoordinate(currentDot);
-    drawPoint(currentDot);
+    drawPoint(currentDot, '#fff');
 
     dotCount += 1;
 

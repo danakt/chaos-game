@@ -1,1 +1,0 @@
-- triangle.html — Sierpinski triangle
