@@ -1,81 +1,87 @@
-<meta charset="UTF-8" />
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-<link rel="stylesheet" href="./style.css" />
-<script src="./index.js"></script>
-<script src="./shapes.js"></script>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./index.js"></script>
+    <script src="./shapes.js"></script>
 
-<title>Chaos game</title>
+    <title>Chaos game</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div class="counter">Dots: <span id="counter">0</span></div>
+    <div id="menu" class="menu"></div>
 
-<canvas id="canvas"></canvas>
-<div class="counter">Dots: <span id="counter">0</span></div>
-<div id="menu" class="menu"></div>
+    <script>
+      const canvas = document.getElementById('canvas');
+      const counter = document.getElementById('counter');
+      const menu = document.getElementById('menu');
 
-<script>
-  const canvas = document.getElementById('canvas');
-  const counter = document.getElementById('counter');
-  const menu = document.getElementById('menu');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+      /** List of shapes to draw */
+      const shapes = [
+        {
+          name: 'Sierpinski triangle',
+          attractorsCreator: createTriangle,
+          formula: (a, v) => (v + a) / 2
+        },
+        {
+          name: 'Sierpinski carpet',
+          attractorsCreator: createCarpet,
+          formula: (a, v) => (v + a * 2) / 3
+        },
+        {
+          name: 'Sierpinski hexagon',
+          attractorsCreator: createHexagon,
+          formula: (a, v) => (v + a * 2) / 3
+        }
+      ];
 
-  /** List of shapes to draw */
-  const shapes = [
-    {
-      name: 'Sierpinski triangle',
-      attractorsCreator: createTriangle,
-      formula: (a, v) => (v + a) / 2
-    },
-    {
-      name: 'Sierpinski carpet',
-      attractorsCreator: createCarpet,
-      formula: (a, v) => (v + a * 2) / 3
-    },
-    {
-      name: 'Sierpinski hexagon',
-      attractorsCreator: createHexagon,
-      formula: (a, v) => (v + a * 2) / 3
-    }
-  ];
+      // Menu links
+      const links = shapes.map((shape, i) => {
+        const link = document.createElement('a');
+        link.href = '#';
 
-  // Menu links
-  const links = shapes.map((shape, i) => {
-    const link = document.createElement('a');
-    link.href = '#';
+        link.innerHTML = shape.name;
 
-    link.innerHTML = shape.name;
+        return link;
+      });
 
-    return link;
-  });
+      links.forEach((link, i) => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          runShape(i);
+        });
 
-  links.forEach((link, i) => {
-    link.addEventListener('click', event => {
-      event.preventDefault();
-      runShape(i);
-    });
+        menu.appendChild(link);
+      });
 
-    menu.appendChild(link);
-  });
+      /**
+       * Runs drawing a shape by specified index
+       */
+      const runShape = index => {
+        links.forEach(link => link.classList.remove('active'));
+        links[index].classList.add('active');
 
-  /**
-   * Runs drawing a shape by specified index
-   */
-  const runShape = index => {
-    links.forEach(link => link.classList.remove('active'));
-    links[index].classList.add('active');
+        stopDrawing = startChaosGame(
+          canvas,
+          shapes[index].attractorsCreator(canvas.width, canvas.height, canvas.height / 9),
+          shapes[index].formula,
+          0,
+          count => {
+            counter.innerHTML = count;
+          }
+        );
+      };
 
-    stopDrawing = startChaosGame(
-      canvas,
-      shapes[index].attractorsCreator(canvas.width, canvas.height, canvas.height / 9),
-      shapes[index].formula,
-      0,
-      count => {
-        counter.innerHTML = count;
-      }
-    );
-  };
-
-  runShape(0);
-</script>
+      runShape(0);
+    </script>
+  </body>
+</html>
